@@ -1,20 +1,21 @@
 {
     "name": "danperron/oauthconsumer",
     "description": "OAuth 1.0 Consumer for PHP",
-    "version":"1.0.0",
+    "version": "1.0.0",
     "authors": [
         {
             "name": "Dan Perron",
             "email": "danp3rr0n@gmail.com"
         }
     ],
-    "minimum-stability":"dev",
+    "minimum-stability": "dev",
     "require": {
-        "php": ">=5.3.0"
+        "php": ">=5.3.0",
+        "lib-curl": "*"
     },
     "autoload": {
-        "psr-4":{
-            "danperron\\OAuth\\":"src"
+        "psr-4": {
+            "danperron\\OAuth\\": "src"
         }
     }
 }
