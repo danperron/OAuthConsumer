@@ -1,6 +1,19 @@
 #OAuth 1.0 Consumer for PHP
    
 
+##Installation
+
+Simply add the following requires to your composer.json and run **php composer.phar update**.
+
+```json
+{
+    "minimum-stability":"dev",
+    "require": {
+        "danperron/oauthconsumer":"*"
+    }
+}
+```
+
 ##Usage
 
 
@@ -45,7 +58,7 @@ try {
 }
 ```
 
-###Authenticating a request token
+###Authenticating a request token and making a authorized call.
 
 ```php
 <?php
