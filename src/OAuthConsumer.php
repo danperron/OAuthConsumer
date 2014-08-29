@@ -87,14 +87,18 @@ class OAuthConsumer {
      * @throws OAuthException
      */
     public function fetchAccessToken(OAuthToken $authorizedRequestToken, $params = array()) {
+        
+        $this->lastNonce = self::generateNonce();
+        $this->lastTimeStamp = time();
+        
         $requestParams = array(
-            'oauth_timestamp' => time(),
+            'oauth_timestamp' => $this->lastTimeStamp,
             'oauth_consumer_key' => $this->consumerKey,
             'oauth_token' => $authorizedRequestToken->getTokenString(), 
             'oauth_signature_method' => self::SIGNATURE_METHOD,
             'oauth_signature' => $this->generateSignature(
                     $this->generateBaseString($this->accessTokenUrl, self::METHOD_POST), $authorizedRequestToken),
-            'oauth_nonce' => self::generateNonce(),
+            'oauth_nonce' => $this->lastNonce,
             'oauth_version' => self::OAUTH_VERSION
         );
 
