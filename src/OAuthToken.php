@@ -1,7 +1,7 @@
 <?php
 namespace danperron\OAuth;
 /**
- * Description of OAuthToken
+ * Object representation of an OAuth token.  
  *
  * @author Dan Perron <danp3rr0n@gmail.com>
  * @license http://opensource.org/licenses/MIT The MIT License (MIT)
@@ -10,16 +10,30 @@ class OAuthToken {
     private $tokenString = '';
     private $tokenSecret = '';
     
-    
+    /**
+     * 
+     * @param string $tokenString - the oauth token
+     * @param string $tokenSecret - the token secret
+     */
     function __construct($tokenString, $tokenSecret) {
         $this->tokenString = $tokenString;
         $this->tokenSecret = $tokenSecret;
     }
 
+    /**
+     * return the token string
+     * 
+     * @return string
+     */
     public function getTokenString() {
         return $this->tokenString;
     }
 
+    /**
+     * return the token secret
+     * 
+     * @return string
+     */
     public function getTokenSecret() {
         return $this->tokenSecret;
     }

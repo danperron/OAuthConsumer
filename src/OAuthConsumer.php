@@ -2,8 +2,10 @@
 
 namespace danperron\OAuth;
 
+use Exception;
+
 /**
- * Description of OAuthConsumer
+ * OAuthConsumer - A simple OAuth 1.0 Consumer class
  *
  * @author Dan Perron <danp3rr0n@gmail.com>
  * 
@@ -12,20 +14,68 @@ namespace danperron\OAuth;
  */
 class OAuthConsumer {
 
-    private $consumerSecret = '';
+    /**
+     * The Consumer key given by the OAuth provider
+     * 
+     * @var string 
+     */
     private $consumerKey = '';
     
     /**
-     *
+     * The consumer secret given by the OAuth provider
+     * 
+     * @var string
+     */
+    private $consumerSecret = '';
+    
+    
+    /**
+     * The currently set access token.
+     * 
      * @var OAuthToken
      */
     private $token = null;
+    
+    /**
+     * The location to retrieve request tokens.
+     * 
+     * @var string
+     */
     private $requestTokenUrl = '';
+    
+    /**
+     * The location to retrieve access tokens
+     * 
+     * @var string 
+     */
     private $accessTokenUrl = '';
+    
+    /**
+     * The authorization url for authorizing request tokens.
+     * 
+     * @var string 
+     */
     private $authorizeUrl = '';
+    
+    /**
+     * Callback url to be sent with the authorization request.
+     * 
+     * @var string
+     */
     private $callbackUrl = '';
     
+    /**
+     * last timestamp generated
+     * 
+     * @var int
+     */
     private $lastTimeStamp;
+    
+    /**
+     * last nonce generated
+     * 
+     * @var string 
+     */
     private $lastNonce;
 
     const SIGNATURE_METHOD = 'HMAC-SHA1';
@@ -37,6 +87,12 @@ class OAuthConsumer {
     const METHOD_DELETE = 'DELETE';
     const METHOD_HEAD = 'HEAD';
 
+    /**
+     * 
+     * 
+     * @param string $consumerKey - The consumer key given by the OAuth provider
+     * @param string $consumerSecret - The consumer secret given by the OAuth provider
+     */
     function __construct($consumerKey, $consumerSecret) {
         $this->consumerKey = $consumerKey;
         $this->consumerSecret = $consumerSecret;
@@ -47,7 +103,6 @@ class OAuthConsumer {
      * 
      * @param array $params
      * @return OAuthToken
-     * @throws \danperron\OAuth\OAuthException
      * @throws OAuthException
      */
     public function fetchRequestToken($params = array()) {
@@ -64,7 +119,7 @@ class OAuthConsumer {
             'oauth_version' => self::OAUTH_VERSION
         );
 
-        //$requestParams = array_merge($requestParams, $params);
+        $requestParams = array_merge($requestParams, $params);
 
         try {
             $response = $this->makeCall($this->requestTokenUrl, self::METHOD_POST, $params, $this->generateHeader($requestParams));
@@ -74,7 +129,7 @@ class OAuthConsumer {
             return $requestToken;
         } catch (OAuthException $e) {
             throw $e;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new OAuthException("Unable to fetch request token.", 0, $e);
         }
     }
@@ -83,10 +138,9 @@ class OAuthConsumer {
      * 
      * Attemp to fetch an access token from an authorized request token.
      * 
-     * @param \danperron\OAuth\OAuthToken $authorizedRequestToken
+     * @param OAuthToken $authorizedRequestToken
      * @param array $params
      * @return OAuthToken
-     * @throws \danperron\OAuth\OAuthException
      * @throws OAuthException
      */
     public function fetchAccessToken(OAuthToken $authorizedRequestToken, $params = array()) {
@@ -115,11 +169,17 @@ class OAuthConsumer {
             return $accessToken;
         } catch (OAuthException $e) {
             throw $e;
-        } catch(\Exception $e){
+        } catch(Exception $e){
             throw new OAuthException('Unable to fetch access token.', 0, $e);
         }
     }
     
+    /**
+     * generate oauth authorization header
+     * 
+     * @param array $params
+     * @return string
+     */
     private function generateHeader($params){
         $requiredKeys = array(
             'oauth_timestamp', 
@@ -145,6 +205,15 @@ class OAuthConsumer {
         return $header;
     }
     
+    /**
+     * Make an authorized request with a valid access token.
+     * 
+     * @param string $url - url to be called
+     * @param string $method - http method to use
+     * @param array $parameters - an array of parameters to be sent
+     * @return string - the returned response body
+     * @throws OAuthException
+     */
     public function makeRequest($url, $method, $parameters = array()){
          
         $this->lastNonce = self::generateNonce();
@@ -172,7 +241,7 @@ class OAuthConsumer {
     /**
      * redirect to authorize url with request token
      * 
-     * @param \danperron\OAuth\OAuthToken $requestToken
+     * @param OAuthToken $requestToken
      */
     public function authorizeToken(OAuthToken $requestToken) {
         $queryParams = array(
@@ -187,6 +256,13 @@ class OAuthConsumer {
         header("Location: $location");
     }
 
+    /**
+     * Generate oauth_signature from base string and token if available
+     * 
+     * @param string $baseString
+     * @param OAuthToken $token
+     * @return string
+     */
     private function generateSignature($baseString, OAuthToken $token = null) {
         $key = self::urlEncode($this->consumerSecret) . '&';
         if ($token != null) {
@@ -250,31 +326,71 @@ class OAuthConsumer {
         return str_replace(array('%7E', '+'), array('~', ' '), rawurlencode($string));
     }
 
+    /**
+     * Set the request token url
+     * 
+     * @param string $requestTokenUrl
+     */
     public function setRequestTokenUrl($requestTokenUrl) {
         $this->requestTokenUrl = $requestTokenUrl;
     }
 
+    /**
+     * set the access token url
+     * 
+     * @param string $accessTokenUrl
+     */
     public function setAccessTokenUrl($accessTokenUrl) {
         $this->accessTokenUrl = $accessTokenUrl;
     }
 
+    /**
+     * set the authorize url
+     * 
+     * @param string $authorizeUrl
+     */
     public function setAuthorizeUrl($authorizeUrl) {
         $this->authorizeUrl = $authorizeUrl;
     }
 
+    /**
+     * set the callback url.  This callback may not be the one that is called
+     * if there is a callback url set at the OAuth provider.
+     * 
+     * @param string $callbackUrl
+     */
     public function setCallbackUrl($callbackUrl) {
         $this->callbackUrl = $callbackUrl;
     }
 
+    /**
+     * returns the currently set access token
+     * 
+     * @return OAuthToken
+     */
     public function getToken() {
         return $this->token;
     }
 
+    /**
+     * Set an oauth access token to be used to make calls
+     * 
+     * @param OAuthToken $token
+     */
     public function setToken(OAuthToken $token) {
         $this->token = $token;
     }
 
-        
+    /**
+     * make http call
+     * 
+     * @param string $url
+     * @param string $method
+     * @param array $parameters
+     * @param string $header
+     * @return string
+     * @throws OAuthException
+     */
     private function makeCall($url, $method, $parameters = array(), $header) {
         $ch = curl_init();
         

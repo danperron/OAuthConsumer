@@ -2,7 +2,7 @@
 namespace danperron\OAuth;
 
 /**
- * Description of OAuthException
+ * OAuthException
  *
  * @author Dan Perron <danp3rr0n@gmail.com>
  * @license http://opensource.org/licenses/MIT The MIT License (MIT)
