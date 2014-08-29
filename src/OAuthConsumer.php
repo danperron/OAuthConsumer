@@ -6,6 +6,9 @@ namespace danperron\OAuth;
  * Description of OAuthConsumer
  *
  * @author Dan Perron <danp3rr0n@gmail.com>
+ * 
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
+ * 
  */
 class OAuthConsumer {
 
@@ -237,11 +240,14 @@ class OAuthConsumer {
         return md5(microtime() . mt_rand());
     }
 
+    /**
+     * Url encode
+     * 
+     * @param string $string
+     * @return string
+     */
     private static function urlEncode($string) {
-        $returnString = rawurlencode($string);
-        $returnString = str_replace("%7E", "~", $returnString);
-        $returnString = str_replace("+", " ", $returnString);
-        return $returnString;
+        return str_replace(array('%7E', '+'), array('~', ' '), rawurlencode($string));
     }
 
     public function setRequestTokenUrl($requestTokenUrl) {

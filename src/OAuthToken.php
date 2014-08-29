@@ -4,6 +4,7 @@ namespace danperron\OAuth;
  * Description of OAuthToken
  *
  * @author Dan Perron <danp3rr0n@gmail.com>
+ * @license http://opensource.org/licenses/MIT The MIT License (MIT)
  */
 class OAuthToken {
     private $tokenString = '';
@@ -41,6 +42,5 @@ class OAuthToken {
         }
 
         return new OAuthToken($tokenParts['oauth_token'], $tokenParts['oauth_token_secret']);
-    }
-    
+    }   
 }
